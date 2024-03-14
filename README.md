@@ -1,4 +1,5 @@
-Create a config.json file in the root of the project to hold your tokens, clientId, guildId, etc
+REQUIRED:
+- Create a config.json file in the root of the project to hold your tokens, clientId, guildId, etc
 
 
 To get the bot online:
