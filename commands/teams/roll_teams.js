@@ -18,6 +18,11 @@ module.exports = {
 			return
 		}
 
+		if(members.size > 10) {
+			await interaction.reply('Cannot roll teams with more than 10 total players')
+			return
+		}
+
 		let players = ''
 		members.each(member => {
 			players = players.concat(' ', member.user.username)
