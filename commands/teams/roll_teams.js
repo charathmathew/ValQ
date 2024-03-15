@@ -14,10 +14,10 @@ module.exports = {
 		}
 
 		const members = vc.members
-		// if(members.size < 2) {
-		// 	await interaction.reply('Insufficient number of players to create teams')
-		// 	return
-		// }
+		if(members.size < 2) {
+			await interaction.reply('Insufficient number of players to create teams')
+			return
+		}
 
 		if(members.size > 10) {
 			await interaction.reply('Cannot roll teams with more than 10 total players')
