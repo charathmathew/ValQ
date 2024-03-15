@@ -20,7 +20,9 @@ module.exports = {
 
         if(teamChannelsHaveBeenDeleted(guild)) {
             let categoryChannel = getChannelByName(categoryChannelName, oldState.guild)
-            categoryChannel.delete()
+            if(categoryChannel) {
+                categoryChannel.delete()
+            }
         }
     }
 }
@@ -37,11 +39,9 @@ async function deleteChannelIfEmpty(channel){
 
 function teamChannelsHaveBeenDeleted(guild){
     if(guild.channels.cache.find(channel => channel.name === team1VCName)) {
-        console.log('team 1 still exists')
         return false
     }
     if(guild.channels.cache.find(channel => channel.name === team2VCName)) {
-        console.log('team 2 still exists')
         return false
     }
     return true
