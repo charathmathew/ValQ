@@ -1,4 +1,5 @@
-const { SlashCommandBuilder, GuildMember } = require('discord.js');
+const { SlashCommandBuilder, ChannelType, Client, Events, IntegrationApplication, InteractionCollector } = require('discord.js');
+const { team1VCName, team2VCName, categoryChannelName } = require('./../../config.json')
 
 module.exports = {
 	data: new SlashCommandBuilder()
@@ -13,10 +14,10 @@ module.exports = {
 		}
 
 		const members = vc.members
-		if(members.size < 2) {
-			await interaction.reply('Insufficient number of players to create teams')
-			return
-		}
+		// if(members.size < 2) {
+		// 	await interaction.reply('Insufficient number of players to create teams')
+		// 	return
+		// }
 
 		if(members.size > 10) {
 			await interaction.reply('Cannot roll teams with more than 10 total players')
@@ -37,6 +38,31 @@ module.exports = {
 		
 		await interaction.followUp(`Attackers : ${getSpaceSeparatedUserString(team1)}`)
 		await interaction.followUp(`Defenders : ${getSpaceSeparatedUserString(team2)}`)
+
+		let categoryChannel = await interaction.guild.channels.create({name: categoryChannelName, type: ChannelType.GuildCategory})
+
+		let vc1Options = {
+			name: team1VCName,
+  			type: ChannelType.GuildVoice,
+			userLimit: team1.length,
+			reason: "VC1 for Valorant custom match"
+		}
+
+		let vc2Options = {
+			name: team2VCName,
+  			type: ChannelType.GuildVoice,
+			userLimit: team2.length || 1,
+			reason: "VC2 for Valorant custom match"
+		}
+
+		const team1VC = await categoryChannel.children.create(vc1Options)
+		const team2VC = await categoryChannel.children.create(vc2Options)
+
+		categoryChannel.s
+
+		movePlayersToTeamVoiceChannels(team1, team1VC)
+		movePlayersToTeamVoiceChannels(team2, team2VC)
+
 		return
 	}
 };
@@ -72,4 +98,10 @@ function getSpaceSeparatedUserString(memberList) {
 	})
 
 	return memberList
+}
+
+function movePlayersToTeamVoiceChannels(players, teamChannel){
+	players.forEach(member => {
+		member.voice.setChannel(teamChannel)
+	})
 }
