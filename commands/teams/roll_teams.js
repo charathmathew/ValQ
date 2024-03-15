@@ -44,14 +44,14 @@ module.exports = {
 		let vc1Options = {
 			name: team1VCName,
   			type: ChannelType.GuildVoice,
-			userLimit: team1.length,
+			userLimit: team1.length + 1,
 			reason: "VC1 for Valorant custom match"
 		}
 
 		let vc2Options = {
 			name: team2VCName,
   			type: ChannelType.GuildVoice,
-			userLimit: team2.length || 1,
+			userLimit: (team2.length || 1) + 1,
 			reason: "VC2 for Valorant custom match"
 		}
 
