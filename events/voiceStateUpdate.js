@@ -10,6 +10,11 @@ module.exports = {
             return
         }
 
+        // disregard voiceStateUpdate events without channel change
+        if(oldState.channelId === newState.channelId){
+            return 
+        }
+
         if(oldState.channel.name == team1VCName){
             let team1VC = getChannelByName(team1VCName, guild)
             await deleteChannelIfEmpty(team1VC)
