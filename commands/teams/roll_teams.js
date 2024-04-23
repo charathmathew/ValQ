@@ -19,10 +19,11 @@ module.exports = {
 			return
 		}
 
-		if(members.size > 10) {
-			await interaction.reply('Cannot roll teams with more than 10 total players')
-			return
-		}
+		// channels very often have more than 10 members - disabling this check restriction for now
+		// if(members.size > 10) {
+		// 	await interaction.reply('Cannot roll teams with more than 10 total players')
+		// 	return
+		// }
 
 		let players = ''
 		members.each(member => {
