@@ -18,30 +18,31 @@ module.exports = {
         const team1VC = guild.channels.cache.find(channel => channel.name === team1VCName && channel.type === ChannelType.GuildVoice);
         const team2VC = guild.channels.cache.find(channel => channel.name === team2VCName && channel.type === ChannelType.GuildVoice);
 
-        let allMembers = []
-        if(team1VC){
-            allMembers = allMembers.concat(Array.from(team1VC.members.values()))
-        }
-        if(team2VC){
-            allMembers = allMembers.concat(Array.from(team2VC.members.values()))
-        }
+        let allMembers = [];
+        team1VC && (allMembers = allMembers.concat(Array.from(team1VC.members.values())));
+        team2VC && (allMembers = allMembers.concat(Array.from(team2VC.members.values())));
 
-        if(allMembers.length === 0) {
-            await interaction.reply("Could not find any players to move")
+        if (!allMembers.length) {
+            // no members found
+            await interaction.reply("Could not find any players to move");
             return
         }
 
-        let categoryChannel = getChannelByName(categoryChannelName, guild)
-        if(!categoryChannel){
-            let categoryChannel = await interaction.guild.channels.create({name: categoryChannelName, type: ChannelType.GuildCategory})
+        // get category channel, create one if it doesn't exist
+        let categoryChannel = guild.channels.cache.find(channel => channel.name === categoryChannelName);
+        if (!categoryChannel) {
+            categoryChannel = await interaction.guild.channels.create({
+                name: categoryChannelName,
+                type: ChannelType.GuildCategory
+            });
         }
 
-        let lobbyVCOptions = {
+        // create lobby voice channel
+        const lobbyVC = await categoryChannel.children.create({
             name: lobbyVCName,
             type: ChannelType.GuildVoice,
             reason: "Lobby for all players"
-        }
-        const lobbyVC = await categoryChannel.children.create(lobbyVCOptions)
+        })
 
         // move all members to lobby voice channel
         allMembers.forEach(member => {
@@ -52,7 +53,3 @@ module.exports = {
         return 
     }
 };
-
-function getChannelByName(channelName, guild){
-    return guild.channels.cache.find(channel => channel.name === channelName);
-}
