@@ -1,4 +1,4 @@
-const { SlashCommandBuilder, ChannelType, Client, Events, IntegrationApplication, InteractionCollector } = require('discord.js');
+const { SlashCommandBuilder, ChannelType } = require('discord.js');
 const { team1VCName, team2VCName, categoryChannelName } = require('./../../config.json')
 
 module.exports = {
@@ -58,8 +58,6 @@ module.exports = {
 
 		const team1VC = await categoryChannel.children.create(vc1Options)
 		const team2VC = await categoryChannel.children.create(vc2Options)
-
-		categoryChannel.s
 
 		movePlayersToTeamVoiceChannels(team1, team1VC)
 		movePlayersToTeamVoiceChannels(team2, team2VC)

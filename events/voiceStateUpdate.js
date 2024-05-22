@@ -1,5 +1,5 @@
 const { Events } = require('discord.js')
-const { team1VCName, team2VCName, categoryChannelName } = require('../config.json');
+const { team1VCName, team2VCName, lobbyVCName, categoryChannelName } = require('../config.json');
 
 module.exports = {
     name: Events.VoiceStateUpdate,
@@ -21,6 +21,9 @@ module.exports = {
         } else if (oldState.channel.name == team2VCName){
             let team2VC = getChannelByName(team2VCName, guild)
             await deleteChannelIfEmpty(team2VC)
+        } else if (oldState.channel.name == lobbyVCName){
+            let lobbyVC = getChannelByName(lobbyVCName, guild)
+            await deleteChannelIfEmpty(lobbyVC)
         }
 
         if(teamChannelsHaveBeenDeleted(guild)) {
@@ -47,6 +50,9 @@ function teamChannelsHaveBeenDeleted(guild){
         return false
     }
     if(guild.channels.cache.find(channel => channel.name === team2VCName)) {
+        return false
+    }
+    if(guild.channels.cache.find(channel => channel.name === lobbyVCName)) {
         return false
     }
     return true
