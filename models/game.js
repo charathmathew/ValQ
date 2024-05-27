@@ -1,45 +1,28 @@
 const fs = require('fs');
+const crypto = require('crypto');
 const { databaseFileName } = require('./../config.json');
 
 module.exports = class Game {
-    constructor(uniqueId){
-        this.id = uniqueId;
+    constructor(serverId, creatorId){
+        this.id = this.generateUniqueGameId(serverId, creatorId);
+        this.guildId = serverId;
         this.captain1;
         this.captain2;
         this.lastPick;
+        this.availablePlayers = [];
         this.team1 = [];
         this.team2 = [];
     }
 
-    // get getId(){
-    //     return this.id;
-    // }
-
-    // get captain1(){
-    //     return this.captain1;
-    // }
-
-    // set captain1(user){
-    //     this.captain1 = user;
-    //     return;
-    // }
-
-    // get captain2(){
-    //     return this.captain2;
-    // }
-
-    // set captain2(user){
-    //     this.captain2 = user;
-    //     return;
-    // }
-
-    // get team1(){
-    //     return this.team1;
-    // }
-
-    // get team2(){
-    //     return this.team2;
-    // }
+    generateUniqueGameId(guildId, creatorId){
+        const data = `${guildId}-${creatorId}`;
+      
+        // Create a hash using SHA256
+        const hash = crypto.createHash('sha256').update(data).digest('hex');
+        const identifier = hash.substring(0, 16);
+      
+        return identifier;
+    }
 
     whoseTurnToPick(){
         return this.isCaptain1TurnToPick ? this.captain1 : this.captain2;
@@ -49,41 +32,38 @@ module.exports = class Game {
         return this.lastPick === this.captain1;
     }
 
-    setCaptains(team1Captain){
+    setCaptains(team1Captain, team2Captain){
+        this.captain1 = team1Captain;
+        this.captain2 = team2Captain;
         this.team1.push(team1Captain);
-        // this.team2.push(team2Captain);
+        this.team2.push(team2Captain);
     }
 
-    save(){
-        const jsonData = JSON.stringify(this, null, 2);
+    saveNewGame(){
+        // create json string of game state
+        const gameStateObj = {[this.guildId]: {}};
+        gameStateObj[this.guildId][this.id] = this;
+        let gameJson = JSON.stringify(gameStateObj, null, 2)
+        console.log(`saving game state ${gameJson}`)
 
         // if file doesn't exist, create it
         if(!fs.existsSync(databaseFileName)) {
-            fs.writeFileSync(databaseFileName, jsonData, 'utf8');
+            fs.writeFileSync(databaseFileName, gameJson, 'utf8');
             return
         }
 
         // if file exists but is empty
-        fs.stat(databaseFileName, (err, fileStats) => {
-            if(err) {
-                console.log("Error saving game to file - ", err)
-                return
-            }
-
-            if (fileStats.size === 0) {
-                fs.writeFileSync(databaseFileName, jsonData, 'utf8');
-                return
-            }
-        })
+        if(fs.readFileSync(databaseFileName, 'utf8').length === 0){
+            console.log(`file exists but is empty`)
+            fs.writeFileSync(databaseFileName, gameJson, 'utf8')
+            return
+        }
 
         // if file exists and is not empty
-        fs.appendFile(databaseFileName, `,\n${jsonData}`, 'utf8', (err) => {
-            if (err){
-                console.log("Error saving game to file - ", err);
-                return
-            }
-            console.log(`Object appended to "${databaseFileName}`);
-        });
-
+        let existingGameData = JSON.parse(fs.readFileSync(databaseFileName, 'utf8'))
+        existingGameData[this.guildId][this.id] = this;
+        let updatedGameData = JSON.stringify(existingGameData, null, 2)
+        console.log(`update game data - ${updatedGameData}`)
+        fs.writeFileSync(databaseFileName, updatedGameData, 'utf8')
     }
 }

@@ -1,5 +1,4 @@
-const {SlashCommandBuilder, ChannelType } = require('discord.js');
-const crypto = require('crypto');
+const { SlashCommandBuilder } = require('discord.js');
 const Game = require('./../../models/game');
 
 module.exports = {
@@ -21,16 +20,13 @@ module.exports = {
 
         await interaction.deferReply();
 
-        let guild = interaction.guild;
-        const captain1 = pickRandomCaptains(members)
-        // const [captain1, captain2] = pickRandomCaptains(members)
-        let gameId = generateUniqueGameId(guild.id, interaction.member.id)
-        let game = new Game(gameId)
-        game.setCaptains(captain1)
-        // game.setCaptains(captain1, captain2);
-        game.save();
+        const [captain1, captain2] = pickRandomCaptains(members)
+        let game = new Game(interaction.guild.id, interaction.member.id)
+        game.availablePlayers = Array.from(members.values())
+        game.setCaptains(captain1, captain2);
+        game.saveNewGame();
 
-        await interaction.followUp(`Your team captains are ${captain1.displayName} and ...`);
+        await interaction.followUp(`Your team captains are ${captain1.displayName} and ${captain2.displayName}`);
         return
     }
 };
@@ -40,19 +36,8 @@ function pickRandomCaptains(members){
     console.log(`potential captains - ${JSON.stringify(players)}`)
     let captain1Index = Math.floor(Math.random() * players.length)
     let captain1 = players[captain1Index]
-    players.splice(captain1Index, 1)
-    return captain1
+    // players.splice(captain1Index, 1)
     // let captain2Index = Math.floor(Math.random() * players.length)
     // let captain2 = players[captain2Index]
-    // return [captain1, captain2]
-}
-
-function generateUniqueGameId(guildId, creatorId){
-  const data = `${guildId}-${creatorId}`;
-
-  // Create a hash using SHA256
-  const hash = crypto.createHash('sha256').update(data).digest('hex');
-  const identifier = hash.substring(0, 16);
-
-  return identifier;
+    return [captain1, captain1]
 }
