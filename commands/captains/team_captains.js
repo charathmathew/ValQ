@@ -4,7 +4,7 @@ const Game = require('./../../models/game');
 module.exports = {
     data: new SlashCommandBuilder()
         .setName('team_captains')
-        .setDescription('Start a team captain style draft for team selection'),
+        .setDescription('Randomly picks team captains for team selection'),
     async execute(interaction) {
         const vc = (interaction.member.voice.channel ?? false)
         if(!interaction.member.voice.channel) {
@@ -17,6 +17,11 @@ module.exports = {
         //     await interaction.reply(`Insufficient number of players to create teams`)
         //     return
         // }
+
+        if(members.size > 10) {
+            await interaction.reply(`Cannot begin a team captains draft with more than 10 total players`)
+            return
+        }
 
         await interaction.deferReply();
 
