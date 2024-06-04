@@ -1,4 +1,4 @@
-const { SlashCommandBuilder } = require('discord.js');
+const { SlashCommandBuilder, ActionRowBuilder, StringSelectMenuBuilder, StringSelectMenuOptionBuilder } = require('discord.js');
 const Game = require('./../../models/game');
 const GameRepo = require('./../../repos/gameRepo');
 
@@ -27,7 +27,17 @@ module.exports = {
             return
         }
 
+        const userSelect = new StringSelectMenuBuilder().setCustomId(game.id);
+        for (const player of game.availablePlayers) {
+            userSelect
+                .addOptions(
+                    new StringSelectMenuOptionBuilder()
+                        .setLabel(player.displayName)
+                        .setValue(player.userId)
+                )
+        }
+        const row = new ActionRowBuilder().addComponents(userSelect);
 
-        interaction.followUp(`You may draft a player`)
+        return await interaction.followUp({content: `Draft Pick for ${userTurn.displayName}`, components: [row]})
     }
 }

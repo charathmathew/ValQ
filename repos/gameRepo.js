@@ -32,6 +32,22 @@ function getGameByCaptainIdAndServerId(captainId, guildId){
     return createGameFromData(allGamesFromGuild[gameId]);
 }
 
+function getGameByGuildIdAndGameId(guildId, gameId) {
+    let allGames = getGamesFromDBFile();
+    if (Object.keys(allGames).length === 0){
+        // no games in db file
+        return false
+    }
+
+    let gameData = allGames[guildId][gameId] || {};
+    if(Object.keys(gameData).length === 0){
+        // could not find game
+        return false;
+    }
+
+    return createGameFromData(gameData);
+}
+
 function getGamesFromDBFile(){
     if(fs.readFileSync(databaseFileName, 'utf8').length === 0){
         // no data in db file
@@ -57,5 +73,6 @@ function createGameFromData(data){
 }
 
 module.exports = {
-    getGameByCaptainIdAndServerId
+    getGameByCaptainIdAndServerId,
+    getGameByGuildIdAndGameId
 }

@@ -25,7 +25,7 @@ module.exports = class Game {
     }
 
     whoseTurnToPick(){
-        return this.isCaptain1TurnToPick ? this.captain1 : this.captain2;
+        return this.lastPick === this.captain1.userId ? this.captain2 : this.captain1;
     }
 
     isCaptain1TurnToPick(){
@@ -33,7 +33,7 @@ module.exports = class Game {
             return true;
         }
         
-        return this.lastPick === this.captain1;
+        return this.lastPick === this.captain1.userId;
     }
 
     setCaptains(team1Captain, team2Captain){
