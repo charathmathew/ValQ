@@ -29,6 +29,10 @@ module.exports = class Game {
     }
 
     isCaptain1TurnToPick(){
+        if (this.lastPick = null) {
+            return true;
+        }
+        
         return this.lastPick === this.captain1;
     }
 

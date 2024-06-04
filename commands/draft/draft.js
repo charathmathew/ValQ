@@ -13,19 +13,21 @@ module.exports = {
             return
         }
 
+        await interaction.deferReply();
+
         let game = GameRepo.getGameByCaptainIdAndServerId(interaction.member.id, interaction.guild.id)
-        if(!game){
-            await interaction.reply(`You must be a captain of an ongoing game to use this command.`)
+        if(!(game instanceof Game)){
+            await interaction.followUp(`You must be a captain of an ongoing game to use this command.`)
             return
         }
 
         let userTurn = game.whoseTurnToPick()
-        if(interaction.member.id !== userTurn.id){
-            await interaction.reply(`It is not your turn to draft a player. Try again after the other captain has drafted`);
+        if(interaction.member.id !== userTurn.userId){
+            await interaction.followUp(`It is not your turn to draft a player. Try again after the other captain has drafted`);
             return
         }
 
 
-        console.log('you may draft a player')
+        interaction.followUp(`You may draft a player`)
     }
 }
