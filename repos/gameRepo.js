@@ -1,4 +1,4 @@
-function getGameByCaptainId(captainId){
+function getGameByCaptainIdAndServerId(captainId, serverId){
     return false;
 }
 

@@ -13,7 +13,7 @@ module.exports = {
             return
         }
 
-        let game = GameRepo.getGameByCaptainId(interaction.member.id)
+        let game = GameRepo.getGameByCaptainIdAndServerId(interaction.member.id, interaction.guild.id)
         if(!game){
             await interaction.reply(`You must be a captain of an ongoing game to use this command.`)
             return
