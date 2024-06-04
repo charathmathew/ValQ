@@ -28,14 +28,6 @@ module.exports = class Game {
         return this.lastPick === this.captain1.userId ? this.captain2 : this.captain1;
     }
 
-    isCaptain1TurnToPick(){
-        if (this.lastPick = null) {
-            return true;
-        }
-        
-        return this.lastPick === this.captain1.userId;
-    }
-
     setCaptains(team1Captain, team2Captain){
         this.captain1 = team1Captain;
         this.captain2 = team2Captain;
@@ -43,12 +35,37 @@ module.exports = class Game {
         this.team2.push(team2Captain);
     }
 
+    draftPlayer(playerId, captainId){
+        let chosenPlayer = null;
+        for(const[index,player] of this.availablePlayers.entries()){
+            if(player.userId === playerId) {
+                chosenPlayer = player
+                this.availablePlayers.splice(index, 1)
+                break
+            }
+        }
+
+        // if player not found, simply return
+        if(!chosenPlayer) {
+            return
+        }
+
+        if(captainId === this.captain1.userId){
+            this.team1.push(chosenPlayer)
+            this.lastPick = this.captain1.userId
+            return [chosenPlayer, 'team 1']
+        } else if (captainId === this.captain2.userId) {
+            this.team2.push(chosenPlayer)
+            this.lastPick = this.captain2.userId
+            return [chosenPlayer, 'team 2']
+        }
+    }
+
     saveNewGame(){
         // create json string of game state
         const gameStateObj = {[this.guildId]: {}};
         gameStateObj[this.guildId][this.id] = this;
         let gameJson = JSON.stringify(gameStateObj, null, 2)
-        console.log(`saving game state ${gameJson}`)
 
         // if file doesn't exist, create it
         if(!fs.existsSync(databaseFileName)) {
@@ -58,16 +75,18 @@ module.exports = class Game {
 
         // if file exists but is empty
         if(fs.readFileSync(databaseFileName, 'utf8').length === 0){
-            console.log(`file exists but is empty`)
             fs.writeFileSync(databaseFileName, gameJson, 'utf8')
             return
         }
 
         // if file exists and is not empty
+        this.update()
+    }
+
+    update(){
         let existingGameData = JSON.parse(fs.readFileSync(databaseFileName, 'utf8'))
         existingGameData[this.guildId][this.id] = this;
         let updatedGameData = JSON.stringify(existingGameData, null, 2)
-        console.log(`update game data - ${updatedGameData}`)
         fs.writeFileSync(databaseFileName, updatedGameData, 'utf8')
     }
 }

@@ -7,7 +7,6 @@ module.exports = {
     async execute(interaction){
         await interaction.deferUpdate();
         
-        console.log(interaction)
         let game = GameRepo.getGameByGuildIdAndGameId(interaction.guildId, interaction.customId)
         if(!(game instanceof Game)){
             await interaction.followUp({content: 'Unable to find game', ephemeral: true})
@@ -24,9 +23,20 @@ module.exports = {
             await interaction.followUp({content: `Current pick: ${draftPickTurnUser.user}\nPlease wait till they have made a pick`, ephemeral: true})
             return
         }
+        
+        let chosenPlayerId = interaction.values[0]
+        const [draftPick, team]  = game.draftPlayer(chosenPlayerId, draftPickTurnUser.userId)
+        game.update()
 
-        game.lastPick = draftPickTurnUser.userId
+        await interaction.followUp({content: `${draftPick.displayName} has been drafted to ${team} by ${interaction.user.username}`})
         let nextPickUser = game.whoseTurnToPick()
+
+
+        // remove the select menu if there are no more available players to draft
+        if(game.availablePlayers.length === 0) {
+            await interaction.editReply({content: `All players have been drafted`, components: []})
+            return
+        }
 
         const userSelect = new StringSelectMenuBuilder().setCustomId(interaction.customId);
         for (const player of game.availablePlayers) {
@@ -37,9 +47,8 @@ module.exports = {
                         .setValue(player.userId)
                 )
         }
-        const row = new ActionRowBuilder().addComponents(userSelect);
-        await interaction.editReply({content: `Draft pick for ${nextPickUser.displayName}`, components: [row]})
 
-        // return interaction.followUp({content: `Eligible pick. Excecuting draft logic and updating game`})
+        const row = new ActionRowBuilder().addComponents(userSelect);
+        await interaction.editReply({content: `Next pick: ${nextPickUser.displayName}`, components: [row]})
     }
 }

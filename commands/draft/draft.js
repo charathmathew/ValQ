@@ -5,7 +5,7 @@ const GameRepo = require('./../../repos/gameRepo');
 module.exports = {
     data: new SlashCommandBuilder()
         .setName('draft')
-        .setDescription('Draft an available player to your team'),
+        .setDescription('Begin the player draft'),
     async execute(interaction) {
         const vc = (interaction.member.voice.channel ?? false)
         if(!interaction.member.voice.channel) {
@@ -21,12 +21,12 @@ module.exports = {
             return
         }
 
-        let userTurn = game.whoseTurnToPick()
-        if(interaction.member.id !== userTurn.userId){
-            await interaction.followUp(`It is not your turn to draft a player. Try again after the other captain has drafted`);
+        if(interaction.member.id !== game.captain1.userId && interaction.member.id !== game.captain2.userId) {
+            await interaction.followUp({content:`Only team captains can start the draft`, ephemeral: true})
             return
         }
 
+        let userTurn = game.whoseTurnToPick()
         const userSelect = new StringSelectMenuBuilder().setCustomId(game.id);
         for (const player of game.availablePlayers) {
             userSelect
@@ -38,6 +38,6 @@ module.exports = {
         }
         const row = new ActionRowBuilder().addComponents(userSelect);
 
-        return await interaction.followUp({content: `Draft Pick for ${userTurn.displayName}`, components: [row]})
+        return await interaction.followUp({content: `Next pick: ${userTurn.displayName}`, components: [row]})
     }
 }

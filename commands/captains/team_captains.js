@@ -26,9 +26,9 @@ module.exports = {
         game.setCaptains(captain1, captain2);
         game.saveNewGame();
 
-        await interaction.followUp(`Your team captains are ${captain1.displayName} and ${captain2.displayName}
+        await interaction.followUp(`Your captains are ${captain1.toString()} and ${captain2.toString()}
                                     \n${captain1.displayName} gets first pick
-                                    \`\`\`Use /draft to draft a player\`\`\``);
+                                    \`\`\`Use /draft to begin the player draft\`\`\``);
         return
     }
 };
