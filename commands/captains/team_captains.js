@@ -13,10 +13,10 @@ module.exports = {
         }
 
         const members = vc.members
-        // if(members.size < 3){
-        //     await interaction.reply(`Insufficient number of players to create teams`)
-        //     return
-        // }
+        if(members.size < 3){
+            await interaction.reply(`Insufficient number of players to create teams`)
+            return
+        }
 
         if(members.size > 10) {
             await interaction.reply(`Cannot begin a team captains draft with more than 10 total players`)
