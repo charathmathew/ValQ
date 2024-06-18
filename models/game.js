@@ -12,6 +12,7 @@ module.exports = class Game {
         this.availablePlayers = [];
         this.team1 = [];
         this.team2 = [];
+        this.draftLog = "";
     }
 
     generateUniqueGameId(guildId, creatorId){
@@ -31,8 +32,16 @@ module.exports = class Game {
     setCaptains(team1Captain, team2Captain){
         this.captain1 = team1Captain;
         this.captain2 = team2Captain;
-        this.team1.push(team1Captain);
-        this.team2.push(team2Captain);
+        this.team1.push(this.captain1);
+        this.team2.push(this.captain2);
+
+
+        // remove captains from availablePlayers
+        const captain1Index = this.availablePlayers.findIndex(player => player.userId === this.captain1.userId);
+        const captain2Index = this.availablePlayers.findIndex(player => player.userId === this.captain2.userId);
+
+        this.availablePlayers.splice(captain1Index, 1);
+        this.availablePlayers.splice(captain2Index, 1);
     }
 
     draftPlayer(playerId, captainId){
@@ -47,6 +56,7 @@ module.exports = class Game {
 
         // if player not found, simply return
         if(!chosenPlayer) {
+            console.log(`player not found - playerId - ${playerId}`)
             return
         }
 
@@ -59,6 +69,18 @@ module.exports = class Game {
             this.lastPick = this.captain2.userId
             return [chosenPlayer, 'team 2']
         }
+    }
+
+    appendToDraftLog(msg) {
+        if(!this.draftLog) {
+            this.draftLog = msg
+            this.update()
+            return
+        }
+
+        this.draftLog = this.draftLog + "\n\n" + msg    
+        this.update()
+        return
     }
 
     saveNewGame(){

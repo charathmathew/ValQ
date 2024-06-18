@@ -68,6 +68,7 @@ function createGameFromData(data){
     game.availablePlayers = data.availablePlayers || [];
     game.team1 = data.team1 || [];
     game.team2 = data.team2 || [];
+    game.draftLog = data.draftLog || '';
 
     return game;
 }
