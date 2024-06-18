@@ -13,7 +13,7 @@ module.exports = {
         }
 
         const members = vc.members
-        // if(members.size < 2){
+        // if(members.size < 3){
         //     await interaction.reply(`Insufficient number of players to create teams`)
         //     return
         // }
@@ -27,12 +27,12 @@ module.exports = {
 
         const [captain1, captain2] = pickRandomCaptains(members)
         let game = new Game(interaction.guild.id, interaction.member.id)
-        game.availablePlayers = Array.from(members.values())
+        game.availablePlayers = [...members.values()]
         game.setCaptains(captain1, captain2);
         game.saveNewGame();
 
         await interaction.followUp(`Your captains are ${captain1.toString()} and ${captain2.toString()}
-                                    \n${captain1.displayName} gets first pick
+                                    \n${captain1.toString()} gets first pick
                                     \`\`\`Use /draft to begin the player draft\`\`\``);
         return
     }
@@ -40,11 +40,10 @@ module.exports = {
 
 function pickRandomCaptains(members){
     let players = Array.from(members.values())
-    console.log(`potential captains - ${JSON.stringify(players)}`)
     let captain1Index = Math.floor(Math.random() * players.length)
     let captain1 = players[captain1Index]
-    // players.splice(captain1Index, 1)
-    // let captain2Index = Math.floor(Math.random() * players.length)
-    // let captain2 = players[captain2Index]
-    return [captain1, captain1]
+    players.splice(captain1Index, 1)
+    let captain2Index = Math.floor(Math.random() * players.length)
+    let captain2 = players[captain2Index]
+    return [captain1, captain2]
 }
