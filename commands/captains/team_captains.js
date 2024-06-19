@@ -27,7 +27,7 @@ module.exports = {
 
         const [captain1, captain2] = pickRandomCaptains(members)
         let game = new Game(interaction.guild.id, interaction.member.id)
-        game.availablePlayers = [...members.values()]
+        game.availablePlayers = [...members.values()].filter(player => player.userId !== captain1.userId && player.userId !== captain2.userId);
         game.setCaptains(captain1, captain2);
         game.saveNewGame();
 
@@ -45,5 +45,5 @@ function pickRandomCaptains(members){
     players.splice(captain1Index, 1)
     let captain2Index = Math.floor(Math.random() * players.length)
     let captain2 = players[captain2Index]
-    return [captain1, captain2]
+    return [captain1, captain1]
 }
