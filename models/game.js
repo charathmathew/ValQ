@@ -34,14 +34,6 @@ module.exports = class Game {
         this.captain2 = team2Captain;
         this.team1.push(this.captain1);
         this.team2.push(this.captain2);
-
-
-        // remove captains from availablePlayers
-        const captain1Index = this.availablePlayers.findIndex(player => player.userId === this.captain1.userId);
-        const captain2Index = this.availablePlayers.findIndex(player => player.userId === this.captain2.userId);
-
-        this.availablePlayers.splice(captain1Index, 1);
-        this.availablePlayers.splice(captain2Index, 1);
     }
 
     draftPlayer(playerId, captainId){
@@ -107,6 +99,7 @@ module.exports = class Game {
 
     update(){
         let existingGameData = JSON.parse(fs.readFileSync(databaseFileName, 'utf8'))
+        existingGameData[this.guildId] = existingGameData[this.guildId] || {}
         existingGameData[this.guildId][this.id] = this;
         let updatedGameData = JSON.stringify(existingGameData, null, 2)
         fs.writeFileSync(databaseFileName, updatedGameData, 'utf8')
