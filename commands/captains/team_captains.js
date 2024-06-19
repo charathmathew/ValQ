@@ -45,5 +45,5 @@ function pickRandomCaptains(members){
     players.splice(captain1Index, 1)
     let captain2Index = Math.floor(Math.random() * players.length)
     let captain2 = players[captain2Index]
-    return [captain1, captain1]
+    return [captain1, captain2]
 }
