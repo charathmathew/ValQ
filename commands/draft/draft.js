@@ -28,6 +28,11 @@ module.exports = {
 
         let userTurn = game.whoseTurnToPick()
         const userSelect = new StringSelectMenuBuilder().setCustomId(game.id);
+        
+        if(game.availablePlayers.length < 1) {
+            return await interaction.followUp({content: `Not enough available players to start a draft`})
+        }
+
         for (const player of game.availablePlayers) {
             userSelect
                 .addOptions(
