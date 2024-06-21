@@ -34,6 +34,9 @@ module.exports = class Game {
         this.captain2 = team2Captain;
         this.team1.push(this.captain1);
         this.team2.push(this.captain2);
+        this.availablePlayers = this.availablePlayers.filter((player) => {
+            return player.user.id !== this.captain1.user.id && player.user.id !== this.captain2.user.id
+        })
     }
 
     draftPlayer(playerId, captainId){

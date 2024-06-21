@@ -27,7 +27,7 @@ module.exports = {
 
         const [captain1, captain2] = pickRandomCaptains(members)
         let game = new Game(interaction.guild.id, interaction.member.id)
-        game.availablePlayers = [...members.values()].filter(player => player.userId !== captain1.userId && player.userId !== captain2.userId);
+        game.availablePlayers = [...members.values()]
         game.setCaptains(captain1, captain2);
         game.saveNewGame();
 
